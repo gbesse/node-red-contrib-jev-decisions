@@ -25,6 +25,8 @@ module.exports = function register(RED) {
         const decision = await decide(pack, state, { provider, timeoutMs, signal: controller.signal });
         if (closing) throw new Error('Node closed before decision delivery');
         msg.jev = decision;
+        // A portable trace retains the exact policy and original state for independent Workbench review.
+        msg.decisionBlock = { schemaVersion: 1, pack: structuredClone(pack), rows: [{ state: structuredClone(state), record: structuredClone(decision) }] };
         const review = decision.outcome === pack.fallback;
         node.status({ fill: review ? 'yellow' : 'green', shape: 'dot', text: decision.outcome });
         send(review ? [null, msg] : [msg, null]); done();

@@ -9,3 +9,7 @@ This file records the purpose and technical decisions of agent-authored changes.
 - Added bounded provider calls, pinned model checks and explicit failure handling. Host authorization remains with the integrating application.
 - Documented verified scope and alpha limitations. Tests and type/syntax checks only; no production build or live inference performed.
 - Validation: Node-RED 5.0.7 test-helper runtime: 4 tests. Syntax check, TypeScript noEmit and synthetic demo passed.
+
+## 2026-09-21 — Decision Blocks v0.2.0
+
+Added exact-policy/state review traces to both native output branches and a reusable Function flow. Validated the shipped flow in Node-RED 5.0.7 with synthetic provider responses, including preserved payload, fallback and native errors. No live calls or external effects.

@@ -20,7 +20,7 @@ test('actual Node-RED runtime delivers accepted decision while preserving the pa
   provider = async () => structuredClone(fixture); const node = await load();
   const received = once(helper.getNode('yes'), 'input', { signal: AbortSignal.timeout(3000) });
   node.receive({ payload: { text: 'fixture' }, correlation: 'one' });
-  const [msg] = await received; assert.equal(msg.jev.outcome, 'billing'); assert.equal(msg.correlation, 'one'); assert.deepEqual(msg.payload, { text: 'fixture' });
+  const [msg] = await received; assert.equal(msg.jev.outcome, 'billing'); assert.deepEqual(msg.decisionBlock.pack,pack); assert.equal(msg.decisionBlock.rows[0].record.id,msg.jev.id); assert.deepEqual(msg.decisionBlock.rows[0].state,msg.payload); assert.equal(msg.correlation, 'one'); assert.deepEqual(msg.payload, { text: 'fixture' });
 });
 test('fallback follows review output, not the accepted output', async () => {
   provider = async () => { const r = structuredClone(fixture); r.answers.department.probabilities = { billing: .6, technical: .3, sales: .05, other: .05 }; return r; };
@@ -36,4 +36,14 @@ test('invalid configuration fails without provider invocation', async () => {
   let called = false; provider = async () => { called = true; return fixture; };
   const node = await load({ pack: 'broken' }), failure = once(node, 'call:error', { signal: AbortSignal.timeout(3000) });
   node.receive({ payload: { text: 'fixture' } }); await failure; assert.equal(called, false);
+});
+
+test('shipped Decision Blocks flow loads in the real host and serializes an importable review trace',async()=>{
+ provider=async()=>structuredClone(fixture);
+ const flow=JSON.parse(await readFile(new URL('../examples/decision-blocks-flow.json',import.meta.url)));
+ const functionNode=require('@node-red/nodes/core/function/10-function.js');
+ await helper.load([register,functionNode],flow.concat([{id:'trace-output',type:'helper'},{id:'review-output',type:'helper'}]));
+ const received=once(helper.getNode('trace-output'),'input',{signal:AbortSignal.timeout(3000)});
+ helper.getNode('block-decision').receive({payload:{text:'charged twice'}});
+ const trace=JSON.parse((await received)[0].payload);assert.deepEqual(trace.pack,pack);assert.equal(trace.rows[0].record.outcome,'billing');
 });
