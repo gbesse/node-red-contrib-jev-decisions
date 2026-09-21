@@ -1,0 +1,34 @@
+<!-- Purpose: Configure native Node-RED decision nodes and their server-side credentials. -->
+<script type="text/javascript">
+RED.nodes.registerType('jev-config', {
+    category: 'config', defaults: { name: { value: '' } },
+    credentials: { apiKey: { type: 'password' } },
+    label: function() { return this.name || 'Jev connection'; }
+});
+RED.nodes.registerType('jev-decide', {
+    category: 'function', color: '#b6d8cf', defaults: {
+        name: { value: '' }, connection: { value: '', type: 'jev-config' },
+        input: { value: 'payload', required: true }, pack: { value: '', required: true },
+        timeoutMs: { value: 30000, required: true, validate: RED.validators.number() },
+        concurrency: { value: 4, required: true, validate: RED.validators.number() }
+    }, inputs: 1, outputs: 2, icon: 'font-awesome/fa-code-fork',
+    outputLabels: ['decision', 'review'], label: function() { return this.name || 'Jev decide'; }
+});
+</script>
+<script type="text/html" data-template-name="jev-config">
+<div class="form-row"><label for="node-config-input-name">Name</label><input id="node-config-input-name" type="text"></div>
+<div class="form-row"><label for="node-config-input-apiKey">API key</label><input id="node-config-input-apiKey" type="password"></div>
+</script>
+<script type="text/html" data-template-name="jev-decide">
+<div class="form-row"><label for="node-input-name">Name</label><input id="node-input-name" type="text"></div>
+<div class="form-row"><label for="node-input-connection">Connection</label><input id="node-input-connection"></div>
+<div class="form-row"><label for="node-input-input">State property</label><input id="node-input-input" type="text"></div>
+<div class="form-row"><label for="node-input-pack">DecisionPack</label><textarea id="node-input-pack" rows="12" style="width:70%"></textarea></div>
+<div class="form-row"><label for="node-input-timeoutMs">Timeout (ms)</label><input id="node-input-timeoutMs" type="number"></div>
+<div class="form-row"><label for="node-input-concurrency">Concurrent calls</label><input id="node-input-concurrency" type="number"></div>
+</script>
+<script type="text/html" data-help-name="jev-decide">
+<p>Evaluate the configured DecisionPack using the object in <code>msg.payload</code> or the selected state property.</p>
+<p>The first output receives decisions; the second receives the pack's fallback outcome. The decision record is in <code>msg.jev</code>. Use a Switch node on <code>msg.jev.outcome</code> for individual categories. Errors go to a Catch node.</p>
+<p>State is sent to Typesafe when using the real provider. Keys belong in the connection configuration. Pack examples are included in the repository.</p>
+</script>
