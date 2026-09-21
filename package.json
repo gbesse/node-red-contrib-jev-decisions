@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-jev-decisions",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Native Node-RED nodes for versioned Jev decisions, review routing and provenance.",
   "type": "module",
   "license": "MIT",

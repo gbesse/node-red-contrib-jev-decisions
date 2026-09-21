@@ -47,3 +47,12 @@ test('shipped Decision Blocks flow loads in the real host and serializes an impo
  helper.getNode('block-decision').receive({payload:{text:'charged twice'}});
  const trace=JSON.parse((await received)[0].payload);assert.deepEqual(trace.pack,pack);assert.equal(trace.rows[0].record.outcome,'billing');
 });
+
+test('review trace preserves evaluated input when a retained host message mutates during inference',async()=>{
+ let entered,complete;const ready=new Promise(r=>entered=r),pending=new Promise(r=>complete=r);
+ provider=async()=>{entered();await pending;return structuredClone(fixture);};
+ const node=await load(),message={payload:{text:'Original invoice'}},received=once(helper.getNode('yes'),'input',{signal:AbortSignal.timeout(3000)});
+ node.emit('input',message);await ready;message.payload.text='Mutated after inference began';complete();
+ const [result]=await received;assert.equal(result.decisionBlock.rows[0].state.text,'Original invoice');
+ const {fingerprint}=await import('@gbesse/decisionpacks');assert.equal(result.decisionBlock.rows[0].record.inputFingerprint,fingerprint(result.decisionBlock.rows[0].state));
+});

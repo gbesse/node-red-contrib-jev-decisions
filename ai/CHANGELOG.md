@@ -13,3 +13,7 @@ This file records the purpose and technical decisions of agent-authored changes.
 ## 2026-09-21 — Decision Blocks v0.2.0
 
 Added exact-policy/state review traces to both native output branches and a reusable Function flow. Validated the shipped flow in Node-RED 5.0.7 with synthetic provider responses, including preserved payload, fallback and native errors. No live calls or external effects.
+
+## 2026-09-21 — Preserve input at the decision boundary
+
+Snapshot the host message input before inference so a retained message mutation cannot produce an invalid review trace. A real Node-RED test mutates the original message while the provider is pending and verifies the stored input fingerprint.

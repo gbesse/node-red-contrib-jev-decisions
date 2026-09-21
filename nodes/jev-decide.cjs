@@ -21,7 +21,8 @@ module.exports = function register(RED) {
         // Only trusted host settings may inject a provider; incoming messages cannot override credentials or transport.
         const injected = RED.settings.jevDecisionProvider;
         const provider = injected || createJevProvider({ apiKey: credentials?.apiKey, timeoutMs });
-        const state = RED.util.getMessageProperty(msg, config.input || 'payload');
+        // Freeze the input before inference; upstream nodes can retain and mutate the message while Jev is pending.
+        const state = structuredClone(RED.util.getMessageProperty(msg, config.input || 'payload'));
         const decision = await decide(pack, state, { provider, timeoutMs, signal: controller.signal });
         if (closing) throw new Error('Node closed before decision delivery');
         msg.jev = decision;
