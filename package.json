@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-jev-decisions",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Native Node-RED nodes for versioned Jev decisions, review routing and provenance.",
   "type": "module",
   "license": "MIT",
@@ -27,7 +27,8 @@
     "test": "node --test tests/*.test.mjs",
     "check": "node scripts/check.mjs",
     "typecheck": "tsc --noEmit --skipLibCheck --strict --target ES2022 --module NodeNext docs/public-api-types.mts",
-    "demo": "node examples/demo.mjs"
+    "demo": "node examples/demo.mjs",
+    "demo:report": "node examples/demo-report.mjs"
   },
   "dependencies": {
     "@gbesse/decisionpacks": "git+https://github.com/gbesse/decisionpacks.git#3c90b6e667c16653b9a6ae00b376df9bddbd8461"
