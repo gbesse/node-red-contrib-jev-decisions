@@ -34,6 +34,10 @@ See [reuse and provenance](docs/reuse.md), [contributing](CONTRIBUTING.md) and [
 
 [Recorded verification scope](docs/verification.md).
 
+## Shareable demo report
+
+Run `npm run demo:report` to capture this repository’s bundled example as one JSON object with the project purpose, version and complete demo output. The command fails if the demo fails, so the report is useful when sharing a reproducible first look or reporting unexpected behavior. The bundled demo’s data and safety boundaries still apply.
+
 ## Decision Blocks
 
 Import `examples/decision-blocks-flow.json` into Node-RED 5.0.7. Configure the Jev connection, connect your state source to the decision node, and wire output 2 to a human review queue. The example's `trace-output` and `review-output` are test sinks: replace them with File/Debug or your queue nodes in the editor. No action or email is executed by this example.
